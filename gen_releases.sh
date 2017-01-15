@@ -8,5 +8,6 @@ for GOOS in ${OS_S[@]} ; do
     GOOS=${GOOS} \
       GOARCH=${ARCH} \
       go build -o releases/gotpl_${GOOS}_${ARCH}
+      tar -cvzf releases/gotpl_${GOOS}_${ARCH}.tar.gz releases/gotpl_${GOOS}_${ARCH}
   done
 done

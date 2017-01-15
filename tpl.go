@@ -8,7 +8,9 @@ import (
 	"os"
 	"flag"
 	"text/template"
+	"path/filepath"
 
+	"github.com/Masterminds/sprig"
 	"gopkg.in/yaml.v2"
 )
 
@@ -17,8 +19,8 @@ var d = flag.String("data", "/input/data", "The YAML file to read configuration 
 var o = flag.String("output", "", "This is the file that the output will be writen to. If not set, will print to stdout")
 
 // ExecuteTemplate asdf
-func ExecuteTemplate(b []byte, o io.Writer, t ...string) error {
-	tpl, err := template.ParseFiles(t...)
+func ExecuteTemplate(b []byte, o io.Writer, t string) error {
+	tpl, err := template.New(filepath.Base(t)).Funcs(sprig.TxtFuncMap()).ParseFiles(t)
 	if err != nil {
 		return fmt.Errorf("Error parsing template(s): %v", err)
 	}

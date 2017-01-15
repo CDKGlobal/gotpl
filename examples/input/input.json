@@ -1,0 +1,8 @@
+{
+  "name": "<yourname>",
+  "note": {
+    "json": "json is valid yaml! :)"
+  },
+  "arr": ["1","2","3"],
+  "thing": 1
+}

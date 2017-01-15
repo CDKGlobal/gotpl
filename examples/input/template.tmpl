@@ -1,1 +1,4 @@
 Hello, {{.name}}. A friendly reminder that {{.note.json}}
+Templating with Sprig: {{b64enc .name}}
+Unfortunately {{"{{"}}join "," .arr {{"}}"}} doesn't work...
+{{.thing}}
