@@ -1,0 +1,5 @@
+---
+name: <yourname>
+note: {
+  "json": "json is valid yaml! :)"
+}

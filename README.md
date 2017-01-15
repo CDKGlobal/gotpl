@@ -3,24 +3,38 @@
 Command line tool that compiles Golang
 [templates](http://golang.org/pkg/text/template/) with values from YAML files.
 
-Inspired by Python/Jinja2's [j2cli](https://github.com/kolypto/j2cli).
-
 ## Install
 
-    go get github.com/tsg/gotpl
+    go get github.com/jgensler8/gotpl
 
 ## Usage
 
-Say you have a `template` file like this:
+Contents of `template`:
 
-    {{.first_name}} {{.last_name}} is {{.age}} years old.
+```
+Hello, {{.name}}. A friendly reminder that {{.note.json}}
+```
 
-and a `user.yml` YAML file like this one:
+Contents of `input.yaml`
 
-    first_name: Max
-    last_name: Mustermann
-    age: 30
+```
+---
+name: <yourname>
+note: {
+  "json": "json is valid yaml! :)"
+}
+```
 
-You can compile the template like this:
+```
+$ ./gotpl -data examples/input/input.yaml -template examples/input/template.tmpl
+Hello, <yourname>. A friendly reminder that json is valid yaml! :)
+```
 
-    gotpl template < user.yml
+
+## Dockerfile
+
+```
+GOOS=linux go build
+docker build -t gotpl .
+docker run -v "$PWD/examples/input/input.yaml:/input/data" -v "$PWD/examples/input/template.tmpl:/input/template"  gotpl
+```

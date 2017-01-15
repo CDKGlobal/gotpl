@@ -1,38 +1,35 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
+	"flag"
 	"text/template"
 
 	"gopkg.in/yaml.v2"
 )
 
-// Reads a YAML document from the values_in stream, uses it as values
-// for the tpl_files templates and writes the executed templates to
-// the out stream.
-func ExecuteTemplates(values_in io.Reader, out io.Writer, tpl_files ...string) error {
-	tpl, err := template.ParseFiles(tpl_files...)
+var f = flag.String("template", "/input/template", "The go template to use.")
+var d = flag.String("data", "/input/data", "The YAML file to read configuration from.")
+var o = flag.String("output", "", "This is the file that the output will be writen to. If not set, will print to stdout")
+
+// ExecuteTemplate asdf
+func ExecuteTemplate(b []byte, o io.Writer, t ...string) error {
+	tpl, err := template.ParseFiles(t...)
 	if err != nil {
 		return fmt.Errorf("Error parsing template(s): %v", err)
 	}
 
-	buf := bytes.NewBuffer(nil)
-	_, err = io.Copy(buf, values_in)
-	if err != nil {
-		return fmt.Errorf("Failed to read standard input: %v", err)
-	}
-
 	var values map[string]interface{}
-	err = yaml.Unmarshal(buf.Bytes(), &values)
+	err = yaml.Unmarshal(b, &values)
 	if err != nil {
 		return fmt.Errorf("Failed to parse standard input: %v", err)
 	}
 
-	err = tpl.Execute(out, values)
+	err = tpl.Execute(o, values)
 	if err != nil {
 		return fmt.Errorf("Failed to parse standard input: %v", err)
 	}
@@ -40,7 +37,27 @@ func ExecuteTemplates(values_in io.Reader, out io.Writer, tpl_files ...string) e
 }
 
 func main() {
-	err := ExecuteTemplates(os.Stdin, os.Stdout, os.Args[1:]...)
+	flag.Parse()
+
+	var out *os.File
+	var err error
+	if *o == "" {
+	  out = os.Stdout
+	} else {
+		out, err = os.Create(*o)
+		if err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
+	}
+
+	d, err := ioutil.ReadFile(*d)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+
+	err = ExecuteTemplate(d, out, *f)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
